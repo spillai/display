@@ -8,8 +8,7 @@ from . import png
 
 __all__ = ['URL', 'image', 'images', 'plot']
 
-#URL = 'http://localhost:8000/events'
-DEFAULT_URL = 'http://localhost:9181/events'
+URL = 'http://localhost:8000/events'
 
 def uid():
   return 'pane_%s' % uuid.uuid4()

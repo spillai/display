@@ -6,12 +6,10 @@ import time
 
 import display
 
-
 def generate_image():
   X, Y = numpy.meshgrid(numpy.linspace(0, numpy.pi, 512), numpy.linspace(0, 2, 512))
   z = (numpy.sin(X) + numpy.cos(Y)) ** 2 + 0.5
   return z
-
 
 i1 = generate_image()
 i2 = generate_image()
