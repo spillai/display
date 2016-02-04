@@ -3,10 +3,11 @@ import json
 import numpy
 import requests
 import uuid
+import cv2
 
 from . import png
 
-__all__ = ['URL', 'image', 'images', 'plot']
+__all__ = ['URL', 'image', 'images', 'plot', 'send', 'text']
 
 URL = 'http://localhost:8000/events'
 
@@ -39,9 +40,10 @@ def to_rgb(img):
         return img[:, :, numpy.newaxis].repeat(3, axis=2)
     raise ValueError('Image must be RGB or gray-scale')
 
-
-def image(img, **kwargs):
+def image(img, to_bgr=True, encoding='jpg', **kwargs):
     """ image(img, [win, title, labels, width])
+    to_bgr: converts to bgr, if encoded as rgb (default True).
+    encoding: 'jpg' (default) or 'png'
     """
     assert img.ndim == 2 or img.ndim == 3
     win = kwargs.get('win') or uid()
@@ -51,8 +53,17 @@ def image(img, **kwargs):
     # TODO: if img is a 3d tensor, then unstack it into a list of images
 
     img = to_rgb(normalize(img, kwargs))
-    pngbytes = png.encode(img.tostring(), img.shape[1], img.shape[0])
-    imgdata = 'data:image/png;base64,' + base64.b64encode(pngbytes).decode('ascii')
+    if to_bgr:
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    #pngbytes = png.encode(img.tostring(), img.shape[1], img.shape[0])
+    if encoding=='jpg':
+        jpgbytes = cv2.imencode('.jpg', img)[1]
+        imgdata = 'data:image/jpg;base64,' + base64.b64encode(jpgbytes).decode('ascii')
+    elif encoding=='png':
+        pngbytes = cv2.imencode('.png', img)[1]
+        imgdata = 'data:image/png;base64,' + base64.b64encode(pngbytes).decode('ascii')
+    else:
+        raise ValueError('unknown encoding')
 
     send(command='image', id=win, src=imgdata,
         labels=kwargs.get('labels'),
@@ -63,6 +74,11 @@ def image(img, **kwargs):
 def images(images, **kwargs):
     # TODO: need to merge images into a single canvas
     raise Exception('Not implemented')
+
+def text(txt, **kwargs):
+    win = kwargs.get('win') or uid()
+    title = kwargs.get('title') or 'text'
+    send(command='text', id=win, title=title, text=txt)
 
 def plot(data, **kwargs):
     """ Plot data as line chart.
