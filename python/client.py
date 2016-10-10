@@ -7,19 +7,25 @@ import cv2
 
 from . import png
 
-__all__ = ['URL', 'image', 'images', 'plot', 'send', 'text']
+__all__ = ['URL', 'image', 'images', 'plot', 'send', 'text', 'set_port']
 
+global URL
 URL = 'http://localhost:8000/events'
+
+def set_port(port=8000):
+  global URL
+  URL = 'http://localhost:{}/events'.format(port)
 
 def uid():
   return 'pane_%s' % uuid.uuid4()
 
 def send(**command):
-    command = json.dumps(command)
-    headers = {'Content-Type' : 'application/text'}
-    req = requests.post(URL, headers=headers, data=command.encode('ascii'))
-    resp = req.content
-    return resp is not None
+  global URL
+  command = json.dumps(command)
+  headers = {'Content-Type' : 'application/text'}
+  req = requests.post(URL, headers=headers, data=command.encode('ascii'))
+  resp = req.content
+  return resp is not None
 
 def normalize(img, kwargs):
     minval = kwargs.get('min')

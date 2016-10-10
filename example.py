@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
-import numpy
+import numpy as np
 import random
 import time
+import cv2
 
 import display
+display.set_port(9000)
 
 def generate_image():
-    X, Y = numpy.meshgrid(numpy.linspace(0, numpy.pi, 512), numpy.linspace(0, 2, 512))
-    z = (numpy.sin(X) + numpy.cos(Y)) ** 2 + 0.5
+    X, Y = np.meshgrid(np.linspace(0, np.pi, 512), np.linspace(0, 2, 512))
+    z = (np.sin(X) + np.cos(Y)) ** 2 + 0.5
     return z
 
 i1 = generate_image()
@@ -28,3 +30,6 @@ for i in range(15, 25):
     time.sleep(0.2)
     data.append([i, random.random(), random.random() * 2])
     display.plot(data, win=win)
+
+im = cv2.imread('example.png')
+display.image(im, to_bgr=False, title='png')

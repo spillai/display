@@ -53,4 +53,4 @@ EOF
   echo '"}'
 }
 
-compose | curl -X POST -d @- http://localhost:8000/events
+compose | curl -X POST -d @- http://localhost:9000/events
